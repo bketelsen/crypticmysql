@@ -1,59 +1,61 @@
+
 package crypticmysql
 
 import (
 	"crypto/aes"
 	"crypto/block"
 	"bytes"
-	"io"
+
 )
 
-
-/* MySQL (and ruby) both default to padding the 
-   plain string up to the next block size with the
-   byte value of the number of bytes to be padded
-   -- what kind of crap is that??
-   so if a block is 16 bytes
-   and the string is 11 bytes
-   there are 5 bytes of padding, which will be filled
-   with \x05
-*/
-func Aes128EbcEncrypt(in, key []byte) []byte {
-
-	blocks := len(in) / 16
-
-	if len(in)%16 > 0 {
-		blocks += 1
+// Encrypt using MySQL AES Encrypt
+func AESEncrypt(in, key []byte) []byte {
+	cipher, err := aes.NewCipher(key)
+	if err != nil {
+		return nil
 	}
 
-	var inbytes = make([]byte, (16 * blocks))
-
-	padLength := (16 * blocks) - len(in)
-
-	for x := 0; x < len(inbytes); x++ {
-		inbytes[x] = byte(padLength)
+	pBlocks := (len(in) + aes.BlockSize) / aes.BlockSize
+	pText := make([]byte, pBlocks*aes.BlockSize)
+	copy(pText, in)
+	padLen := byte(len(pText) - len(in))
+	for i := len(in); i < len(pText); i++ {
+		pText[i] = padLen
 	}
-	copy(inbytes, in)
+	pBuf := bytes.NewBuffer(pText)
 
-	var crypted bytes.Buffer
-	var r io.Reader = bytes.NewBuffer(inbytes)
-	cipher, _ := aes.NewCipher(key)
-	w := block.NewECBEncrypter(cipher, &crypted)
-	io.Copy(w, r)
+	cBuf := bytes.NewBuffer(make([]byte, 0, len(pText)))
+	cWtr := block.NewECBEncrypter(cipher, cBuf)
+	_, err = pBuf.WriteTo(cWtr)
+	if err != nil {
+		return nil
+	}
 
-	cb := crypted.Bytes()
-
-	return cb
+	return cBuf.Bytes()
 }
 
-func Aes128EbcDecrypt(in, key []byte) []byte {
-	cipher, _ := aes.NewCipher(key)
+// Decrypt using MySQL AES Decrypt
+func AESDecrypt(in, key []byte) []byte {
+	cipher, err := aes.NewCipher(key)
+	if err != nil {
+		return nil
+	}
 
-	var r io.Reader = block.NewECBDecrypter(cipher, bytes.NewBuffer(in))
-	var w io.Writer
+	pBuf := bytes.NewBuffer(make([]byte, 0, len(in)))
 
-	var plain bytes.Buffer
-	w = &plain
-	io.Copy(w, r)
-	return bytes.TrimSpace(plain.Bytes())
+	cRdr := block.NewECBDecrypter(cipher, bytes.NewBuffer(in))
+	_, err = pBuf.ReadFrom(cRdr)
+	if err != nil {
+		return nil
+	}
 
+	pText := pBuf.Bytes()
+	if len(pText) < 1 {
+		return nil
+	}
+	lenpt := len(pText) - int(pText[len(pText)-1])
+	if lenpt < 0 {
+		return nil
+	}
+	return pText[:lenpt]
 }
