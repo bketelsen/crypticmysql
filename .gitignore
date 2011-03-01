@@ -1,0 +1,12 @@
+*~
+_*
+
+# Go
+*.[ao]
+*.[568vq]
+[568vq].out
+.DS_Store
+main
+# Cgo
+*.cgo*
+*.so
