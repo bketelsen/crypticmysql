@@ -19,18 +19,15 @@ anything longer than 16 bytes is "wrapped" back into the 16 byte key array.
  
 ## Replicating this in Go
 
-package main
+	package main
+	import (
+		github.com/bketelsen/crypticmysql
+	)
+	func main(){
+		cryptedText := crypticmysql.Aes128EbcEncrypt([]byte("brian"),[]byte("abcdefghijklmnop"))	
+	}
 
-import (
-	github.com/bketelsen/crypticmysql
-)
-
-func main(){
-	cryptedText := crypticmysql.Aes128EbcEncrypt([]byte("brian"),[]byte("abcdefghijklmnop"))
-	
-}
-
-##  This code doesn't have much (*ANY*) error handling, and shouldn't be used in production unless you hate your users.
+##  This library doesn't have much (*ANY*) error handling, and shouldn't be used in production unless you hate your users.
 
 ## TODO
 
