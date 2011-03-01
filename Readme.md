@@ -1,4 +1,4 @@
-# CrypticMysql is a library that implements AES_DECRYPT and AES_ENCRYPT functions from MySQL in Go
+CrypticMysql is a library that implements AES_DECRYPT and AES_ENCRYPT functions from MySQL in Go
 
 
 ## Prerequisites
