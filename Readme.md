@@ -34,3 +34,4 @@ anything longer than 16 bytes is "wrapped" back into the 16 byte key array.
 * Error handling
 * Error handling
 * That goofy wrap-around key function that mysql uses.  What the hell were they thinking?
+* Learn Markdown so this doc won't look so bad
