@@ -25,6 +25,7 @@ anything longer than 16 bytes is "wrapped" back into the 16 byte key array.
 	)
 	func main(){
 		cryptedText := crypticmysql.Aes128EbcEncrypt([]byte("brian"),[]byte("abcdefghijklmnop"))	
+		decryptedText := crypticmysql.Aes128EbcDecrypt(cryptedText, []byte("abcdefghijklmnop"))
 	}
 
 ##  This library doesn't have much (*ANY*) error handling, and shouldn't be used in production unless you hate your users.
