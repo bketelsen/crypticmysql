@@ -1,4 +1,3 @@
-
 package crypticmysql
 
 import (
@@ -8,9 +7,28 @@ import (
 
 )
 
+const aesKeyLen = 128
+
+func aesKey(key []byte) []byte {
+	const keyLen = aesKeyLen / 8
+
+	if len(key) == keyLen {
+		return key
+	}
+
+	k := make([]byte, keyLen)
+	copy(k, key)
+	for i := keyLen; i < len(key); {
+		for j := 0; j < keyLen && i < len(key); j, i = j+1, i+1 {
+			k[j] ^= key[i]
+		}
+	}
+	return k
+}
+
 // Encrypt using MySQL AES Encrypt
 func AESEncrypt(in, key []byte) []byte {
-	cipher, err := aes.NewCipher(key)
+	cipher, err := aes.NewCipher(aesKey(key))
 	if err != nil {
 		return nil
 	}
@@ -36,7 +54,7 @@ func AESEncrypt(in, key []byte) []byte {
 
 // Decrypt using MySQL AES Decrypt
 func AESDecrypt(in, key []byte) []byte {
-	cipher, err := aes.NewCipher(key)
+	cipher, err := aes.NewCipher(aesKey(key))
 	if err != nil {
 		return nil
 	}
