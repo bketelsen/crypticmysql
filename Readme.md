@@ -31,7 +31,7 @@ anything longer than 16 bytes is "wrapped" back into the 16 byte key array using
 ## TODO
 
 * Base64 function to encode & decode base64 values if needed
-* <DONE> That goofy wrap-around key function that mysql uses. <PeterGo>
+* *DONE* That goofy wrap-around key function that mysql uses. <PeterGo>
 * Learn Markdown so this doc won't look so bad
 
 ## Contributors:
